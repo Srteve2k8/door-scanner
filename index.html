@@ -2,41 +2,31 @@
 <html>
 <head>
     <title>Door Scanner</title>
-    <script src="https://unpkg.com/html5-qrcode"></script>
-    <style>
-        body{
-            font-family: Arial, sans-serif;
-            margin:20px;
-            text-align:center;
-        }
-    </style>
+    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 </head>
 <body>
 
-<h2>Scan Door QR</h2>
+<h2>QR Scanner Test</h2>
 
-<div id="reader"></div>
+<div id="reader" style="width:300px"></div>
 
-<p id="result">Waiting for QR Code...</p>
+<div id="result">
+    Waiting for scan...
+</div>
 
 <script>
 
 function onScanSuccess(decodedText) {
 
-    document.getElementById("result").innerText =
-        "Scanned: " + decodedText;
+    document.getElementById("result").innerHTML =
+        "<h1>QR Found</h1><p>" + decodedText + "</p>";
 
-    window.location.replace(
-        "https://apps.powerapps.com/play/e/354c67ea-5852-e646-bf45-e3b3d3287ca9/a/11eddc70-c00e-447d-8406-a3b57f09759c?tenantId=df399799-b361-4a99-97f8-936ac2ed402c&door=" +
-        encodeURIComponent(decodedText)
-    );
 }
 
 function onScanFailure(error) {
-    // ignore scan failures
 }
 
-const html5QrCodeScanner = new Html5QrcodeScanner(
+var html5QrcodeScanner = new Html5QrcodeScanner(
     "reader",
     {
         fps: 10,
@@ -44,7 +34,7 @@ const html5QrCodeScanner = new Html5QrcodeScanner(
     }
 );
 
-html5QrCodeScanner.render(
+html5QrcodeScanner.render(
     onScanSuccess,
     onScanFailure
 );
