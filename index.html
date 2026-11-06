@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Door Scanner</title>
+    <title>Door Scannerv2</title>
     <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 </head>
 <body>
@@ -14,19 +14,17 @@
 
 function onScanSuccess(decodedText) {
 
-    // Stop scanner
     scanner.clear();
 
-    // Open Power App with door parameter
     window.location.replace(
         "https://apps.powerapps.com/play/e/354c67ea-5852-e646-bf45-e3b3d3287ca9/a/11eddc70-c00e-447d-8406-a3b57f09759c?tenantId=df399799-b361-4a99-97f8-936ac2ed402c&door=" +
         encodeURIComponent(decodedText) +
         "&t=" + Date.now()
     );
+
 }
 
 function onScanFailure(error) {
-    // Ignore failures
 }
 
 const scanner = new Html5QrcodeScanner(
