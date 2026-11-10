@@ -15,65 +15,82 @@
             margin: 20px;
         }
 
+        h1 {
+            margin-bottom: 20px;
+        }
+
         #reader {
             width: 100%;
             max-width: 500px;
             margin: auto;
         }
 
-        h1 {
-            margin-bottom: 20px;
+        .error {
+            color: red;
+            margin-top: 20px;
         }
     </style>
 </head>
 <body>
 
-<h1>Scan Door QR v2</h1>
+    <h1>Scan Door QR v2</h1>
 
-<div id="reader"></div>
+    <div id="reader"></div>
 
-<script>
+    <script>
 
-let scanner = new Html5Qrcode("reader");
+        let scanner = new Html5Qrcode("reader");
 
-function onScanSuccess(decodedText) {
+        function onScanSuccess(decodedText) {
 
-    console.log("QR Found:", decodedText);
+            scanner.stop().then(() => {
 
-    scanner.stop().then(() => {
+                window.location.replace(
+                    "https://apps.powerapps.com/play/e/354c67ea-5852-e646-bf45-e3b3d3287ca9/a/11eddc70-c00e-447d-8406-a3b57f09759c?tenantId=df399799-b361-4a99-97f8-936ac2ed402c&door=" +
+                    encodeURIComponent(decodedText) +
+                    "&t=" + Date.now()
+                );
 
-        window.location.replace(
-            "https://apps.powerapps.com/play/e/354c67ea-5852-e646-bf45-e3b3d3287ca9/a/11eddc70-c00e-447d-8406-a3b57f09759c?tenantId=df399799-b361-4a99-97f8-936ac2ed402c&door="
-            + encodeURIComponent(decodedText)
-            + "&t="
-            + Date.now()
-        );
+            });
 
-    });
+        }
 
-}
+        Html5Qrcode.getCameras()
+            .then(cameras => {
 
-scanner.start(
-    { facingMode: "environment" },
-    {
-        fps: 10,
-        qrbox: 250
-    },
-    onScanSuccess
-).catch(err => {
+                if (cameras.length < 2) {
+                    document.body.insertAdjacentHTML(
+                        "beforeend",
+                        "<p class='error'>Camera 1 not found.</p>"
+                    );
+                    return;
+                }
 
-    console.error(err);
+                // Force Camera 1
+                const cameraId = cameras[1].id;
 
-    document.body.insertAdjacentHTML(
-        "beforeend",
-        "<p style='color:red'>Camera could not be started.<br>" +
-        err +
-        "</p>"
-    );
+                scanner.start(
+                    cameraId,
+                    {
+                        fps: 10,
+                        qrbox: 250
+                    },
+                    onScanSuccess
+                );
 
-});
+            })
+            .catch(err => {
 
-</script>
+                document.body.insertAdjacentHTML(
+                    "beforeend",
+                    "<p class='error'>Camera error: " + err + "</p>"
+                );
+
+                console.log(err);
+
+            });
+
+    </script>
 
 </body>
 </html>
