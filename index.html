@@ -1,58 +1,76 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Door Scannerv2</title>
-<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Door Scanner v2</title>
+
+    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+        }
+
+        #reader {
+            width: 100%;
+            max-width: 500px;
+            margin: auto;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+        }
+    </style>
 </head>
 <body>
- 
-<h1>Scan Door QRv2</h1>
- 
+
+<h1>Scan Door QR v2</h1>
+
 <div id="reader"></div>
 
 <script>
 
-let scanner;
+let scanner = new Html5Qrcode("reader");
 
 function onScanSuccess(decodedText) {
+
+    console.log("QR Found:", decodedText);
 
     scanner.stop().then(() => {
 
         window.location.replace(
-            "https://apps.powerapps.com/play/e/354c67ea-5852-e646-bf45-e3b3d3287ca9/a/11eddc70-c00e-447d-8406-a3b57f09759c?tenantId=df399799-b361-4a99-97f8-936ac2ed402c&door=" +
-            encodeURIComponent(decodedText) +
-            "&t=" + Date.now()
+            "https://apps.powerapps.com/play/e/354c67ea-5852-e646-bf45-e3b3d3287ca9/a/11eddc70-c00e-447d-8406-a3b57f09759c?tenantId=df399799-b361-4a99-97f8-936ac2ed402c&door="
+            + encodeURIComponent(decodedText)
+            + "&t="
+            + Date.now()
         );
 
     });
 
 }
 
-scanner = new Html5Qrcode("reader");
+scanner.start(
+    { facingMode: "environment" },
+    {
+        fps: 10,
+        qrbox: 250
+    },
+    onScanSuccess
+).catch(err => {
 
-Html5Qrcode.getCameras()
-.then(cameras => {
+    console.error(err);
 
-    if (!cameras.length) {
-        alert("No camera found");
-        return;
-    }
-
-    // Camera 1 (first available)
-    const cameraId = cameras[0].id;
-
-    return scanner.start(
-        cameraId,
-        {
-            fps: 10,
-            qrbox: 250
-        },
-        onScanSuccess
+    document.body.insertAdjacentHTML(
+        "beforeend",
+        "<p style='color:red'>Camera could not be started.<br>" +
+        err +
+        "</p>"
     );
 
-})
-.catch(err => {
-    console.error(err);
 });
 
 </script>
