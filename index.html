@@ -1,46 +1,46 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Door Scannerv2</title>
-    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
-</head>
-<body>
-
-<h1>Scan Door QRv2</h1>
-
-<div id="reader"></div>
-
 <script>
+
+let scanner;
 
 function onScanSuccess(decodedText) {
 
-    scanner.clear();
+    scanner.stop().then(() => {
 
-    window.location.replace(
-        "https://apps.powerapps.com/play/e/354c67ea-5852-e646-bf45-e3b3d3287ca9/a/11eddc70-c00e-447d-8406-a3b57f09759c?tenantId=df399799-b361-4a99-97f8-936ac2ed402c&door=" +
-        encodeURIComponent(decodedText) +
-        "&t=" + Date.now()
+        window.location.replace(
+            "https://apps.powerapps.com/play/e/354c67ea-5852-e646-bf45-e3b3d3287ca9/a/11eddc70-c00e-447d-8406-a3b57f09759c?tenantId=df399799-b361-4a99-97f8-936ac2ed402c&door=" +
+            encodeURIComponent(decodedText) +
+            "&t=" + Date.now()
+        );
+
+    });
+
+}
+
+scanner = new Html5Qrcode("reader");
+
+Html5Qrcode.getCameras()
+.then(cameras => {
+
+    if (!cameras.length) {
+        alert("No camera found");
+        return;
+    }
+
+    // Camera 1 (first available)
+    const cameraId = cameras[0].id;
+
+    return scanner.start(
+        cameraId,
+        {
+            fps: 10,
+            qrbox: 250
+        },
+        onScanSuccess
     );
 
-}
-
-function onScanFailure(error) {
-}
-
-const scanner = new Html5QrcodeScanner(
-    "reader",
-    {
-        fps: 10,
-        qrbox: 250
-    }
-);
-
-scanner.render(
-    onScanSuccess,
-    onScanFailure
-);
+})
+.catch(err => {
+    console.error(err);
+});
 
 </script>
-
-</body>
-</html>
